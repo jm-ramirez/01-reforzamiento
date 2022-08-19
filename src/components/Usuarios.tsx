@@ -1,13 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from 'react';
 import { reqResApi } from '../api/reqRes';
+import { ReqResListado, Usuario } from '../interfaces/reqRes';
 
 export const Usuarios = () => {
+    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+
     useEffect(() => {
         //Llamada al API
-        reqResApi.get('/users').then(resp => {
-            console.log(resp.data.data);
+        reqResApi.get<ReqResListado>('/users').then(resp => {
+            setUsuarios(resp.data.data);
         }).catch(console.log)
-    }, [])
+    }, []);
+
+    const renderItem = ({ id, avatar, email, first_name, last_name }: Usuario) => {
+        return (
+            <tr key={id}>
+                <td>
+                    <img src={avatar} alt={first_name} style={{ width: 50, borderRadius: 100 }} />
+                </td>
+                <td>{first_name} {last_name}</td>
+                <td>{email}</td>
+            </tr>
+        );
+    }
 
     return (
         <>
@@ -21,7 +36,9 @@ export const Usuarios = () => {
                     </tr>
                 </thead>
                 <tbody>
-
+                    {
+                        usuarios.map(renderItem)
+                    }
                 </tbody>
             </table>
         </>
